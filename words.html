@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>音のことば</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎺</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 1列の用語集。上に記号の読み方の表、下にグループごとの用語 */
+:root{
+  --bg:#eceff3; --surface:#ffffff; --ink:#18212c; --ink-2:#5a6676; --line:#d3d9e1;
+  --brass:#9a6a0c;
+  --f-display:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --f-math:"Times New Roman",Times,"Noto Serif",serif;
+  color-scheme:light;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --surface:#171f29; --ink:#e5eaf0; --ink-2:#9aa6b4; --line:#2a3542; --brass:#e0b04a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --surface:#171f29; --ink:#e5eaf0; --ink-2:#9aa6b4; --line:#2a3542; --brass:#e0b04a; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.75;-webkit-text-size-adjust:100%}
+.wrap{max-width:820px;margin:0 auto;padding-inline:16px;padding-block:24px 56px;display:grid;gap:20px}
+.backlink{font-size:13px;font-weight:700;color:var(--ink-2);text-decoration:none}
+.backlink:hover{color:var(--brass);text-decoration:underline}
+header{display:grid;gap:4px}
+h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:clamp(30px,6vw,44px);line-height:1.2}
+.lede{margin:0;color:var(--ink-2);max-width:62ch}
+.toc{display:flex;flex-wrap:wrap;gap:6px}
+.toc a{font-size:13px;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--surface)}
+.toc a:hover{border-color:var(--brass)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:grid;gap:10px;min-width:0;scroll-margin-top:12px}
+h2{margin:0;font-size:18px;font-weight:700}
+dl{margin:0;display:grid;gap:12px}
+dt{font-weight:700;font-size:16px}
+dt small{font-weight:400;color:var(--ink-2);font-size:13px;margin-left:6px}
+dd{margin:2px 0 0}
+dd .ex{display:block;font-size:14px;color:var(--ink-2)}
+dd .ex::before{content:"楽器では　";font-weight:700;color:var(--brass)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:480px}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--ink-2);font-weight:700}
+td.sym{font-family:var(--f-math);font-style:italic;font-size:18px;white-space:nowrap}
+td.unit{font-family:var(--f-mono);white-space:nowrap}
+i.q{font-family:var(--f-math);font-size:1.1em}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="backlink" href="./#course">← 音響ラボ</a>
+  <h1>音のことば</h1>
+  <p class="lede">音響ラボに出てくる物理のことばと記号を、物理を習っていない人向けにまとめました。わからないことばが出てきたら、ここにもどって確かめましょう。</p>
+</header>
+<nav class="toc" aria-label="目次">
+  <a href="#symbols">記号の読み方</a><a href="#wave">振動と波</a><a href="#measure">波を表す量</a><a href="#standing">定在波と固有振動</a><a href="#tone">音の三要素と倍音</a><a href="#harmony">和音と音律</a><a href="#brass">楽器のしくみ</a>
+</nav>
+
+<section id="symbols">
+  <h2>記号の読み方</h2>
+  <p style="margin:0;font-size:14px;color:var(--ink-2)">物理では量を1文字の記号で表します。記号は斜めの文字（イタリック）、単位はまっすぐな文字で書きます。</p>
+  <div class="tbl"><table>
+    <thead><tr><th>記号</th><th>読み方</th><th>意味</th><th>単位</th></tr></thead>
+    <tbody>
+      <tr><td class="sym">f</td><td>エフ</td><td>振動数（1秒間に振動する回数）</td><td class="unit">Hz（ヘルツ）</td></tr>
+      <tr><td class="sym">T</td><td>ティー</td><td>周期（1回振動するのにかかる時間）</td><td class="unit">s（秒）</td></tr>
+      <tr><td class="sym">λ</td><td>ラムダ</td><td>波長（山から次の山までの長さ）</td><td class="unit">m（メートル）</td></tr>
+      <tr><td class="sym">v, V</td><td>ブイ</td><td>波の速さ（空気中の音速は V と書くことが多い）</td><td class="unit">m/s</td></tr>
+      <tr><td class="sym">A</td><td>エー</td><td>振幅（ゆれの大きさ）</td><td class="unit">m</td></tr>
+      <tr><td class="sym">L</td><td>エル</td><td>弦や管の長さ</td><td class="unit">m</td></tr>
+      <tr><td class="sym">n</td><td>エヌ</td><td>何倍振動か（1, 2, 3, …）</td><td class="unit">なし</td></tr>
+      <tr><td class="sym">S</td><td>エス</td><td>弦の張力（引っぱる力）</td><td class="unit">N（ニュートン）</td></tr>
+      <tr><td class="sym">ρ</td><td>ロー</td><td>密度（弦では 1 m あたりの質量）</td><td class="unit">kg/m など</td></tr>
+      <tr><td class="sym">t</td><td>ティー</td><td>気温（時刻の t と同じ文字なので注意）</td><td class="unit">℃</td></tr>
+    </tbody>
+  </table></div>
+  <dl>
+    <dt>v ＝ fλ <small>波の基本式</small></dt>
+    <dd>1回振動すると波は1波長 λ 進み、1秒間に f 回振動するので、1秒間に進む距離は f × λ になります。<span class="ex">空気中の音速 340 m/s で A4（440 Hz）なら、波長は 340 ÷ 440 ≒ 0.77 m。</span></dd>
+    <dt>T ＝ 1/f <small>周期と振動数</small></dt>
+    <dd>1秒に 440 回振動するなら、1回にかかる時間は 1/440 秒です。</dd>
+  </dl>
+</section>
+
+<section id="wave">
+  <h2>振動と波</h2>
+  <dl>
+    <dt>振動</dt><dd>同じ動きを何度もくり返すこと。<span class="ex">弦のゆれ、リードや唇のふるえ、管の中の空気のゆれ。</span></dd>
+    <dt>波</dt><dd>ある場所の振動が、となりへ、となりへと伝わっていく現象。伝わるのは「振動」で、もの自体は流れていかない。</dd>
+    <dt>媒質<small>ばいしつ</small></dt><dd>波を伝えるもの。<span class="ex">音なら空気、弦楽器の弦の波なら弦。</span></dd>
+    <dt>波源</dt><dd>最初に振動を始めるところ。</dd>
+    <dt>横波・縦波</dt><dd>媒質のゆれる向きが、波の進む向きと垂直なら横波、同じ向きなら縦波。<span class="ex">弦を伝わる波は横波、空気中の音は縦波。</span></dd>
+    <dt>密・疎<small>みつ・そ</small></dt><dd>縦波で、媒質が集まった所（密）とまばらな所（疎）。音は空気の密と疎の並びとして伝わる。</dd>
+    <dt>変位</dt><dd>もとの位置からどれだけずれたか。</dd>
+    <dt>重ね合わせ</dt><dd>2つの波が出会うと、変位が足し算されること。</dd>
+    <dt>反射・固定端・自由端</dt><dd>端で波がはね返ることを反射という。端が動けない所を固定端、自由に動ける所を自由端という。</dd>
+  </dl>
+</section>
+
+<section id="measure">
+  <h2>波を表す量</h2>
+  <dl>
+    <dt>振動数<small>しんどうすう／周波数ともいう</small></dt><dd>1秒間に振動する回数。単位は Hz。振動数が大きいほど高い音。振動数が2倍で1オクターブ上。<span class="ex">チューニングの A4 は 440 Hz または 442 Hz。</span></dd>
+    <dt>周期</dt><dd>1回振動するのにかかる時間。</dd>
+    <dt>波長</dt><dd>波の山から次の山まで（密から次の密まで）の長さ。</dd>
+    <dt>振幅</dt><dd>ゆれの大きさ。振幅が大きいほど大きい音。</dd>
+    <dt>音速</dt><dd>音が空気中を進む速さ。約 340 m/s で、気温が 1℃ 上がるごとに約 0.6 m/s 速くなる。<span class="ex">楽器が温まるとピッチが上がるのは、管の中の空気の音速が大きくなるから。</span></dd>
+  </dl>
+</section>
+
+<section id="standing">
+  <h2>定在波（定常波）と固有振動</h2>
+  <dl>
+    <dt>定在波（定常波）</dt><dd>同じ形で逆向きに進む2つの波が重なってできる、その場でゆれているように見える波。</dd>
+    <dt>腹・節<small>はら・ふし</small></dt><dd>定在波で、いちばん大きくゆれる所が腹、まったくゆれない所が節。となりの節と節の間は半波長。</dd>
+    <dt>固有振動</dt><dd>弦や管が自然に振動しやすい振動のしかた。長さと端の条件で決まる。そのときの振動数を固有振動数という。</dd>
+    <dt>基本振動・倍振動</dt><dd>いちばん低い固有振動が基本振動、その2倍、3倍…の振動数の固有振動が2倍振動、3倍振動…。</dd>
+    <dt>気柱<small>きちゅう</small></dt><dd>管の中の空気。管楽器の音の高さは気柱の固有振動で決まる。</dd>
+    <dt>開管・閉管</dt><dd>両端が開いた管が開管、片方が閉じた管が閉管。開管はすべての倍振動、閉管は奇数倍の振動だけができる。<span class="ex">フルートは開管、クラリネットは閉管に近い。</span></dd>
+    <dt>開口端補正</dt><dd>管の開いた端の腹は、管の口より少し外にできる。太い管ほどその差が大きい。</dd>
+    <dt>共鳴</dt><dd>物体の固有振動数と同じ振動数で外から振動を与えると、大きくゆれる現象。</dd>
+  </dl>
+</section>
+
+<section id="tone">
+  <h2>音の三要素と倍音</h2>
+  <dl>
+    <dt>音の三要素</dt><dd>音の高さ（振動数）・大きさ（振幅）・音色（波形）。</dd>
+    <dt>正弦波<small>せいげんは／サイン波</small></dt><dd>いちばん単純な形の波。倍音を含まない「ピー」という音。</dd>
+    <dt>基音・倍音</dt><dd>楽器の音には、いちばん低い成分（基音）と、その2倍、3倍…の振動数の成分（倍音）が含まれる。基音が音の高さを、倍音の混ざり方が音色を決める。第 n 倍音は基音の n 倍の振動数（第1倍音＝基音）。<span class="ex">金管楽器は、押さえ方を変えずに唇の振動を変えると、この倍音の高さの音を順に出せる。</span></dd>
+    <dt>波形</dt><dd>音の振動をグラフにした形。倍音の混ざり方が違うと波形が変わる。</dd>
+    <dt>スペクトル</dt><dd>音にどの振動数の成分がどれだけ含まれるかを示したグラフ。</dd>
+    <dt>フォルマント</dt><dd>口やのど、楽器の胴やベルの形で強められる振動数の山。母音や楽器らしさを決める。</dd>
+    <dt>可聴域</dt><dd>人が聞くことのできる振動数の範囲。およそ 20〜20000 Hz。</dd>
+  </dl>
+</section>
+
+<section id="harmony">
+  <h2>和音と音律</h2>
+  <dl>
+    <dt>うなり</dt><dd>振動数がわずかに違う2つの音を重ねると、音量が周期的にゆれる現象。1秒あたりの回数は2つの振動数の差。<span class="ex">チューニングでは、うなりが消えるところに合わせる。</span></dd>
+    <dt>振動数の比</dt><dd>よく響く音程は振動数が簡単な整数の比になっている。オクターブ 2:1、完全5度 3:2、完全4度 4:3、長3度 5:4、短3度 6:5、長三和音 4:5:6。</dd>
+    <dt>セント</dt><dd>音程の細かい単位。半音を100に分けた1つ分。1オクターブは1200セント。</dd>
+    <dt>平均律</dt><dd>1オクターブを12の等しい半音に分けた音律。ピアノやチューナーの基準。</dd>
+    <dt>純正律・純正な音程</dt><dd>和音の音を整数比に合わせた響き。うなりがなく澄んで聞こえる。<span class="ex">長三和音の第3音は平均律より約14セント低め、第5音は約2セント高めにすると純正になる。</span></dd>
+    <dt>差音<small>さおん</small></dt><dd>2つの音を同時に大きく鳴らすと、耳の中で2つの振動数の差の高さの低い音が聞こえる現象。</dd>
+  </dl>
+</section>
+
+<section id="brass">
+  <h2>楽器のしくみ</h2>
+  <dl>
+    <dt>実音・記譜音</dt><dd>実際に鳴る高さが実音、楽譜に書かれた高さが記譜音。<span class="ex">B♭トランペットは記譜より長2度低く、F管ホルンは完全5度低く鳴る。</span></dd>
+    <dt>バルブ</dt><dd>押すと管が長くなり、基音が下がる。2番で半音、1番で全音、3番で1音半、4番で完全4度下がる。</dd>
+    <dt>ポジション</dt><dd>トロンボーンのスライドの位置。1つ外のポジションへ動かすごとに半音下がる。</dd>
+    <dt>替え指・替えポジション</dt><dd>同じ音を、別の押さえ方（別の倍音列）で出すこと。倍音ごとに音程の傾向が違うので、和音での役割に合わせて選ぶ。</dd>
+    <dt>リップスラー</dt><dd>押さえ方を変えずに、唇と息だけで倍音から倍音へ移る奏法。</dd>
+    <dt>ペダル音</dt><dd>金管楽器の第1倍音付近の、とても低い音。</dd>
+    <dt>ハーモニクス</dt><dd>弦楽器で、弦の節の位置に軽く触れて倍振動だけを鳴らす奏法。</dd>
+  </dl>
+</section>
+</div>
+</body>
+</html>

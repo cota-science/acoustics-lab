@@ -33,7 +33,8 @@ header{display:grid;gap:6px}
 h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:clamp(34px,7vw,56px);line-height:1.15}
 .lede{margin:0;color:var(--ink-2);max-width:60ch}
 .series{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 6px 4px}
-.series svg{display:block;width:100%;height:auto}
+.series .sc{overflow-x:auto}
+.series svg{display:block;width:100%;min-width:620px;height:auto}
 .series p{margin:0;padding:0 10px 6px;font-size:12px;color:var(--ink-2)}
 h2{margin:0;font-size:13px;letter-spacing:.08em;color:var(--ink-2);font-weight:700}
 .apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
@@ -52,6 +53,21 @@ a.app:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
 .links a{font-size:14px;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none;background:var(--surface)}
 .links a:hover{border-color:var(--brass)}
 .how{font-size:14px;color:var(--ink-2);margin:0;max-width:66ch}
+.course{display:grid;gap:12px;scroll-margin-top:12px}
+.how a{color:var(--brass)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:18px}
+.step{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:start}
+.step .num{font-family:var(--f-display);font-weight:800;font-size:30px;line-height:1;color:var(--brass);text-align:center;padding-top:2px}
+.sb{display:grid;gap:8px;min-width:0}
+.sb h3{margin:0;font-size:18px;font-weight:700}
+.sb>p{margin:0;font-size:14px;color:var(--ink-2);max-width:62ch}
+.pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:8px}
+a.pg{display:grid;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:inherit;text-decoration:none}
+a.pg b{font-size:15px}
+a.pg span{font-size:12px;color:var(--ink-2)}
+a.pg:hover{border-color:var(--brass)}
+a.pg:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+@media (max-width:520px){.step{grid-template-columns:28px minmax(0,1fr);gap:8px}.step .num{font-size:24px}}
 footer{font-size:12px;color:var(--ink-2)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -65,12 +81,14 @@ footer{font-size:12px;color:var(--ink-2)}
 </header>
 
 <div class="series" aria-label="B♭を基音とする倍音列の図">
-  <svg id="series" viewBox="0 0 900 120" role="img" aria-label="第1倍音から第12倍音までの位置"></svg>
+  <div class="sc"><svg id="series" viewBox="0 0 900 120" role="img" aria-label="第1倍音から第12倍音までの位置"></svg></div>
   <p>B♭2 を基音とする第12倍音までの位置（横軸は対数＝鍵盤と同じ間隔）。青は平均律より低めに出る倍音（第5・7・10・11倍音）。</p>
 </div>
 
-<section style="display:grid;gap:10px">
-  <h2>アプリ</h2>
+<section id="course" class="course">
+  <h2>学習コース</h2>
+  <p class="how">高校の物理を習っていなくても大丈夫です。1から順に進むと、4のアプリが理解しやすくなります。各ページの先頭に「物理を習っていない人へ」の案内があり、わからないことばは <a href="words.html">音のことば</a> で調べられます。音が出るので、イヤホンかスピーカーを使い、音量を小さめにしてから始めてください。</p>
+  <ol class="steps"><li class="step"><span class="num">1</span><div class="sb"><h3>音は波</h3><p>音の正体は、空気をつたわる「振動」です。波の基本のことばを、模型で見て覚えます。</p><div class="pages"><a class="pg" href="anim/wave-model.html"><b>横波の模型</b><span>振動がとなりへ伝わるしくみ</span></a><a class="pg" href="anim/wave-model-l.html"><b>縦波の模型</b><span>密と疎が伝わる波</span></a><a class="pg" href="anim/longitudinal.html"><b>音波</b><span>空気の粒の動きと疎密</span></a><a class="pg" href="anim/wave-speed.html"><b>波の速さ</b><span>振動数・波長・速さ v ＝ fλ</span></a></div></div></li><li class="step"><span class="num">2</span><div class="sb"><h3>楽器の中の定在波（定常波）</h3><p>弦や管の中ではね返った波が重なり、決まった高さの音だけが残ります。倍音列はここから生まれます。</p><div class="pages"><a class="pg" href="anim/transverse.html"><b>重ね合わせと定在波</b><span>腹と節、反射</span></a><a class="pg" href="anim/string.html"><b>弦の固有振動</b><span>弦楽器の音の高さと倍音</span></a><a class="pg" href="anim/air-column.html"><b>気柱の固有振動</b><span>開管・閉管と管楽器</span></a></div></div></li><li class="step"><span class="num">3</span><div class="sb"><h3>音色と聞こえ方</h3><p>倍音の混ざり方が音色を決め、ずれた音どうしはうなります。マイクで自分の楽器の波形も見られます。</p><div class="pages"><a class="pg" href="anim/timbre.html"><b>音色と波形</b><span>倍音を重ねる・マイク・母音</span></a><a class="pg" href="anim/beats.html"><b>うなり</b><span>チューニングのしくみ</span></a><a class="pg" href="anim/hearing.html"><b>可聴域</b><span>聞こえる高さの範囲</span></a></div></div></li><li class="step"><span class="num">4</span><div class="sb"><h3>演奏に生かす</h3><p>ここまでの知識を使って、和音のハモりと金管楽器の替え指を考えます。</p>
   <div class="apps">
     <a class="app" href="harmony-lab.html">
       <span class="for">和音・チューニング</span>
@@ -87,27 +105,17 @@ footer{font-size:12px;color:var(--ink-2)}
       <span class="go">開く →</span>
     </a>
   </div>
-  <p class="how">使い方：音が出るので、イヤホンかスピーカーを使い、音量を小さめにしてから始めてください。各アプリの「はじめての人へ」と、項目ごとの <b>?</b> に解説があります。</p>
+</div></li></ol>
 </section>
 
 <section class="plan">
   <h2>これから追加する予定</h2>
   <ul>
-    <li>固有振動ラボ：弦・開管・閉管の定在波（定常波）と倍音<span class="soon">準備中</span></li>
-    <li>倍音と音色：倍音の配分を変えて音をつくり、楽器の音と比べる<span class="soon">準備中</span></li>
     <li>ドローン練習：基準の音に合わせて自分の楽器の音程をはめる<span class="soon">準備中</span></li>
   </ul>
 </section>
 
-<section style="display:grid;gap:10px">
-  <h2>物理基礎ラボで復習する</h2>
-  <div class="links">
-    <a href="https://cota-science.github.io/basicphysics-review/anim/string.html">弦の固有振動</a>
-    <a href="https://cota-science.github.io/basicphysics-review/anim/air-column.html">気柱の共鳴</a>
-    <a href="https://cota-science.github.io/basicphysics-review/anim/beats.html">うなり</a>
-    <a href="https://cota-science.github.io/basicphysics-review/">物理基礎ラボ トップ</a>
-  </div>
-</section>
+<p class="how">1〜3のページは、<a href="https://cota-science.github.io/basicphysics-review/">物理基礎ラボ</a> のアニメーションに、音響ラボ用の案内を加えたものです。</p>
 
 <footer>音響ラボ</footer>
 </div>
