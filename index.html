@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>音響ラボ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎺</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 見出しの下に「倍音列」の帯、アプリのカード2枚、準備中の一覧、物理基礎ラボへのリンク */
+:root{
+  --bg:#eceff3; --surface:#ffffff; --ink:#18212c; --ink-2:#5a6676; --line:#d3d9e1;
+  --brass:#9a6a0c; --flat:#1f5fa8; --sharp:#c2410c;
+  --f-display:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --surface:#171f29; --ink:#e5eaf0; --ink-2:#9aa6b4; --line:#2a3542;
+  --brass:#e0b04a; --flat:#7fb3ff; --sharp:#ff9a62; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --surface:#171f29; --ink:#e5eaf0; --ink-2:#9aa6b4; --line:#2a3542;
+  --brass:#e0b04a; --flat:#7fb3ff; --sharp:#ff9a62; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7;-webkit-text-size-adjust:100%}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:grid;gap:22px}
+header{display:grid;gap:6px}
+.eyebrow{margin:0;font-size:12px;letter-spacing:.12em;color:var(--brass);font-weight:700}
+h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:clamp(34px,7vw,56px);line-height:1.15}
+.lede{margin:0;color:var(--ink-2);max-width:60ch}
+.series{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 6px 4px}
+.series svg{display:block;width:100%;height:auto}
+.series p{margin:0;padding:0 10px 6px;font-size:12px;color:var(--ink-2)}
+h2{margin:0;font-size:13px;letter-spacing:.08em;color:var(--ink-2);font-weight:700}
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+a.app{display:grid;gap:8px;align-content:start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;color:inherit;text-decoration:none;transition:border-color .15s}
+a.app:hover{border-color:var(--brass)}
+a.app:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.app .for{font-size:12px;font-weight:700;color:var(--brass);letter-spacing:.06em}
+.app h3{margin:0;font-family:var(--f-display);font-weight:800;font-size:26px;line-height:1.25}
+.app p{margin:0;font-size:14px}
+.app ul{margin:0;padding-left:1.2em;font-size:14px;color:var(--ink-2)}
+.app .go{font-weight:700;font-size:14px;color:var(--brass)}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:8px}
+.plan ul{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:14px}
+.plan .soon{font-size:11px;font-weight:700;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:0 8px;margin-left:6px;white-space:nowrap}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.links a{font-size:14px;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none;background:var(--surface)}
+.links a:hover{border-color:var(--brass)}
+.how{font-size:14px;color:var(--ink-2);margin:0;max-width:66ch}
+footer{font-size:12px;color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">吹奏楽・弦楽部のための音の物理</p>
+  <h1>音響ラボ</h1>
+  <p class="lede">弦や管の固有振動から生まれる「倍音」を手がかりに、音色・和音のハモり・替え指の使い分けを、見て、鳴らして確かめる教材です。</p>
+</header>
+
+<div class="series" aria-label="B♭を基音とする倍音列の図">
+  <svg id="series" viewBox="0 0 900 120" role="img" aria-label="第1倍音から第12倍音までの位置"></svg>
+  <p>B♭2 を基音とする第12倍音までの位置（横軸は対数＝鍵盤と同じ間隔）。青は平均律より低めに出る倍音（第5・7・10・11倍音）。</p>
+</div>
+
+<section style="display:grid;gap:10px">
+  <h2>アプリ</h2>
+  <div class="apps">
+    <a class="app" href="harmony-lab.html">
+      <span class="for">和音・チューニング</span>
+      <h3>倍音ハーモニーラボ</h3>
+      <p>和音の各声部の倍音を並べ、うなりと差音から「ハモる高さ」を探します。</p>
+      <ul><li>長三和音・短三和音・3度・4度・5度</li><li>平均律と純正律の聴き比べ、セント単位の微調整</li><li>うなりの回数と差音の音名を表示、耳だけで合わせるモード</li></ul>
+      <span class="go">開く →</span>
+    </a>
+    <a class="app" href="brass-map.html">
+      <span class="for">金管楽器</span>
+      <h3>金管倍音マップ</h3>
+      <p>押さえ方やポジションごとの倍音列を五線譜で見て、同じ音を出せる替え指を和音での役割から選びます。</p>
+      <ul><li>トランペット・ホルン・トロンボーン・ユーフォニアム・チューバ</li><li>第12倍音までの五線譜とクリックで鳴る音</li><li>バルブの組み合わせによる上ずり、スライドの位置</li></ul>
+      <span class="go">開く →</span>
+    </a>
+  </div>
+  <p class="how">使い方：音が出るので、イヤホンかスピーカーを使い、音量を小さめにしてから始めてください。各アプリの「はじめての人へ」と、項目ごとの <b>?</b> に解説があります。</p>
+</section>
+
+<section class="plan">
+  <h2>これから追加する予定</h2>
+  <ul>
+    <li>固有振動ラボ：弦・開管・閉管の定在波（定常波）と倍音<span class="soon">準備中</span></li>
+    <li>倍音と音色：倍音の配分を変えて音をつくり、楽器の音と比べる<span class="soon">準備中</span></li>
+    <li>ドローン練習：基準の音に合わせて自分の楽器の音程をはめる<span class="soon">準備中</span></li>
+  </ul>
+</section>
+
+<section style="display:grid;gap:10px">
+  <h2>物理基礎ラボで復習する</h2>
+  <div class="links">
+    <a href="https://cota-science.github.io/basicphysics-review/anim/string.html">弦の固有振動</a>
+    <a href="https://cota-science.github.io/basicphysics-review/anim/air-column.html">気柱の共鳴</a>
+    <a href="https://cota-science.github.io/basicphysics-review/anim/beats.html">うなり</a>
+    <a href="https://cota-science.github.io/basicphysics-review/">物理基礎ラボ トップ</a>
+  </div>
+</section>
+
+<footer>音響ラボ</footer>
+</div>
+
+<script>
+function drawSeries(){
+  var svg=document.getElementById('series');
+  var cs=getComputedStyle(document.documentElement),col=function(n){return cs.getPropertyValue(n).trim()};
+  var W=900,x0=40,x1=W-30,base=1,top=1*12;
+  var X=function(n){return x0+Math.log(n)/Math.log(12)*(x1-x0)};
+  var semis=[0,12,19,24,28,31,34,36,38,40,42,43];
+  var names=["B♭2","B♭3","F4","B♭4","D5","F5","A♭5","B♭5","C6","D6","E6","F6"];
+  var h='<line x1="'+x0+'" x2="'+x1+'" y1="92" y2="92" stroke="'+col('--line')+'" stroke-width="1"/>';
+  for(var n=1;n<=12;n++){
+    var dev=1200*Math.log2(n)-100*semis[n-1];
+    var c=dev<-6?col('--flat'):dev>6?col('--sharp'):col('--ink');
+    var x=X(n),hh=10+60/Math.sqrt(n);
+    h+='<line x1="'+x+'" x2="'+x+'" y1="92" y2="'+(92-hh)+'" stroke="'+c+'" stroke-width="4" stroke-linecap="round"/>';
+    h+='<text x="'+x+'" y="'+(86-hh)+'" text-anchor="middle" font-size="13" font-weight="700" fill="'+c+'" font-family="IBM Plex Mono,monospace">'+n+'</text>';
+    h+='<text x="'+x+'" y="110" text-anchor="middle" font-size="11" fill="'+col('--ink-2')+'" font-family="IBM Plex Mono,monospace">'+(n<=4||n%2===0||n===5||n===7?names[n-1]:'')+'</text>';
+  }
+  svg.innerHTML=h;
+}
+drawSeries();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',drawSeries);
+</script>
+</body>
+</html>

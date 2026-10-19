@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎺</text></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.5 system-ui,sans-serif;-webkit-text-size-adjust:100%}
+img{max-width:100%}[hidden]{display:none!important}
+.backlink{font-size:13px;font-weight:700;color:var(--ink-2);text-decoration:none;justify-self:start}
+.backlink:hover{color:var(--brass);text-decoration:underline}
+</style>
+<title>金管倍音マップ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 上に楽器と押さえ方、中央に五線譜と替え指ファインダー、下に全押さえ方の倍音マップ */
+:root{
+  --bg:#eceff3; --surface:#ffffff; --ink:#18212c; --ink-2:#5a6676; --line:#d3d9e1; --hl:#fff3d6;
+  --brass:#9a6a0c; --flat:#1f5fa8; --sharp:#c2410c; --ok:#1f8656;
+  --f-display:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --surface:#171f29; --ink:#e5eaf0; --ink-2:#9aa6b4; --line:#2a3542; --hl:#3a3018;
+  --brass:#e0b04a; --flat:#7fb3ff; --sharp:#ff9a62; --ok:#4fd08d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --surface:#171f29; --ink:#e5eaf0; --ink-2:#9aa6b4; --line:#2a3542; --hl:#3a3018;
+  --brass:#e0b04a; --flat:#7fb3ff; --sharp:#ff9a62; --ok:#4fd08d; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{margin:0;font-size:12px;letter-spacing:.12em;color:var(--brass);font-weight:700}
+h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:clamp(28px,5vw,42px);line-height:1.2;text-wrap:balance}
+.lede{margin:0;color:var(--ink-2);max-width:62ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:12px;min-width:0}
+h2{margin:0;font-size:15px;font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+h2 small{font-weight:400;color:var(--ink-2);font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.field{display:grid;gap:6px}
+.label{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--ink-2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:inherit;font-size:14px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+button:focus-visible,.nt:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.fings{display:flex;flex-wrap:wrap;gap:6px}
+.fings button{font:inherit;display:grid;justify-items:center;min-width:52px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;line-height:1.25}
+.fings button b{font-size:14px}
+.fings button small{font-size:11px;color:var(--ink-2);font-family:var(--f-mono)}
+.fings button.sharp b{color:var(--sharp)}
+.fings button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink)}
+.fings button[aria-pressed="true"] b,.fings button[aria-pressed="true"] small{color:var(--surface)}
+.fings button.unreach{opacity:.45}
+.main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
+.instr{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+.valves{display:flex;gap:8px;align-items:center}
+.valve{width:34px;height:34px;border-radius:50%;border:2px solid var(--ink-2);display:grid;place-items:center;font-family:var(--f-mono);font-weight:500;color:var(--ink-2)}
+.valve.on{background:var(--brass);border-color:var(--brass);color:var(--surface)}
+.valve.thumb{border-radius:8px}
+.facts{font-size:14px;display:grid;gap:2px}
+.facts b{font-family:var(--f-mono);font-weight:500}
+.scroll{overflow-x:auto}
+svg.staff{display:block}
+.st-line{stroke:var(--ink-2);stroke-width:1}
+.st-clef{fill:var(--ink)}
+.st-txt{fill:var(--ink-2);font-family:var(--f-mono);font-size:10px}
+.st-pn{fill:var(--ink);font-family:var(--f-mono);font-size:11px;font-weight:500}
+.st-ott{fill:var(--ink-2);font-family:var(--f-mono);font-size:9px;font-style:italic}
+.nt{cursor:pointer}
+.nt .hit{fill:transparent}
+.nt:hover .hit{fill:var(--line);opacity:.5}
+.nt.sel .hit{fill:var(--hl);opacity:1}
+.nt.out{opacity:.35}
+.d-z{fill:var(--ink)} .d-f1,.d-f2{fill:var(--flat)} .d-s1,.d-s2{fill:var(--sharp)}
+.hollow{fill:var(--surface)!important;stroke-width:1.6}
+.hollow.d-z{stroke:var(--ink)} .hollow.d-f1,.hollow.d-f2{stroke:var(--flat)} .hollow.d-s1,.hollow.d-s2{stroke:var(--sharp)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--ink-2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;font-weight:700;padding:7px 14px;border-radius:8px;border:none;background:var(--brass);color:var(--surface);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:500}
+.slide{flex:1 1 320px;min-width:0;max-width:560px}.slide svg{display:block;width:100%}
+[hidden]{display:none!important}
+.sl-axis{stroke:var(--ink-2)} .sl-txt{fill:var(--ink-2);font-family:var(--f-mono);font-size:10px}
+.sl-pos{fill:var(--ink);font-family:var(--f-mono);font-size:11px;font-weight:500}
+.sl-tube{fill:var(--brass);opacity:.85} .sl-fixed{fill:var(--ink-2);opacity:.5}
+.sl-bad{fill:var(--sharp);font-family:var(--f-mono);font-size:10px}
+.finder .note{font-family:var(--f-display);font-size:30px;font-weight:800;line-height:1.1}
+.finder .sub{color:var(--ink-2);font-size:13px}
+.opts{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.opt{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center}
+.opt.best{border-color:var(--ok);box-shadow:inset 3px 0 0 var(--ok)}
+.opt .fg{font-weight:700;font-size:15px}
+.opt .meta{font-size:13px;color:var(--ink-2);grid-column:1}
+.opt .tip{font-size:13px;grid-column:1/-1}
+.opt .play{grid-row:1/3;grid-column:2;font:inherit;font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.badge{font-size:11px;font-weight:700;color:var(--ok);border:1px solid currentColor;border-radius:999px;padding:0 7px;margin-left:6px;vertical-align:1px}
+.cents{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.c-f{color:var(--flat)} .c-s{color:var(--sharp)}
+table.map{border-collapse:separate;border-spacing:0;font-family:var(--f-mono);font-size:10px}
+.map th,.map td{padding:0;text-align:center}
+.map thead th{height:22px;color:var(--ink-2);font-weight:500;white-space:nowrap}
+.map th.rl{position:sticky;left:0;z-index:1;background:var(--surface);text-align:left;padding-right:8px;font-family:var(--f-body);font-size:12px;white-space:nowrap;min-width:64px}
+.map tr.on th.rl{color:var(--brass);font-weight:700}
+.map td{width:22px;height:24px;border-left:1px solid transparent}
+.map td.cC{border-left-color:var(--line)}
+.map td.col{background:var(--hl)}
+.map tr.on td{background:color-mix(in srgb,var(--brass) 10%,transparent)}
+.map tr.on td.col{background:var(--hl)}
+.cell{font:inherit;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ink-2);background:var(--surface);color:var(--ink);cursor:pointer;padding:0;line-height:1}
+.cell.d-f1,.cell.d-f2{border-color:var(--flat);color:var(--flat)} .cell.d-s1,.cell.d-s2{border-color:var(--sharp);color:var(--sharp)}
+.cell.d-f2{background:color-mix(in srgb,var(--flat) 22%,var(--surface))} .cell.d-s2{background:color-mix(in srgb,var(--sharp) 22%,var(--surface))}
+.cell.out{opacity:.35}
+.cell.sel{outline:2px solid var(--brass);outline-offset:1px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+details summary{cursor:pointer;font-weight:700}
+details p{max-width:66ch;margin:.6em 0 0}
+.note-s{font-size:12px;color:var(--ink-2);margin:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+details.tip{background:none;border:none;padding:0;font-size:13px;color:var(--ink-2)}
+details.tip>summary{cursor:pointer;color:var(--brass);font-weight:700;font-size:12px;list-style:none;display:inline-flex;gap:5px;align-items:center}
+details.tip>summary::-webkit-details-marker{display:none}
+details.tip>summary::before{content:"?";display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;border:1.5px solid currentColor;font-size:11px;line-height:1}
+details.tip>div{margin-top:6px;padding:10px 12px;border-radius:8px;background:color-mix(in srgb,var(--brass) 9%,var(--surface));color:var(--ink);line-height:1.75;display:grid;gap:6px;max-width:62ch}
+details.tip>div p{margin:0}
+details.tip b{font-weight:700}
+.field details.tip>div{max-width:40ch}
+details.guide ol{margin:.6em 0 0;padding-left:1.4em;display:grid;gap:4px;max-width:66ch}
+details.guide h3{font-size:14px;margin:1em 0 0}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <a class="backlink" href="./">← 音響ラボ</a>
+  <p class="eyebrow">金管楽器の倍音列</p>
+  <h1>金管倍音マップ</h1>
+  <p class="lede">押さえ方を変えると基音が半音ずつ下がり、その上に並ぶ倍音列も丸ごと下がります。第12倍音までを五線譜で確かめ、同じ音名を出せる別の押さえ方とその音程の傾向を比べてみましょう。音符を押すと音が鳴ります。</p>
+</header>
+<details class="guide"><summary>はじめての人へ：使い方と「やってみよう」</summary>
+<h3>使い方</h3><ol>
+<li>自分の楽器を選びます。ホルン・トロンボーン・ユーフォニアム・チューバは「仕様」も選びましょう。</li>
+<li>「押さえ方」を左から順に押していくと、基音が半音ずつ下がり、五線譜の倍音列がそろって下がっていく様子が見えます。</li>
+<li>五線譜の音符や倍音マップの丸を押すと、その音が鳴り、右の「替え指ファインダー」に同じ音を出せる押さえ方が並びます。</li>
+<li>ファインダーで「和音での役割」を選ぶと、その役割に一番合う押さえ方に「おすすめ」が付きます。</li>
+<li>各項目の <b>?</b> を押すと、その項目の意味と物理の説明が出ます。</li></ol>
+<h3>やってみよう</h3><ol>
+<li>開放の第4・第5・第6倍音を順に鳴らしましょう。振動数の比 4:5:6 は長三和音そのものです。何の和音になっているか確かめましょう。</li>
+<li>トランペットの記譜 E5 を押し、役割を「根音」と「長3度」で切り替えると、おすすめの押さえ方がどう変わるか比べましょう。</li>
+<li>押さえ方の「1+3」「1+2+3」が赤字になっている理由を、下の解説「バルブを組み合わせると高めになる理由」で確かめましょう。</li>
+<li>トロンボーンの D4 を第1ポジションと第4ポジションで比べましょう。第1ポジションで高くできないのはなぜですか。</li>
+<li>ホルンを「ダブル」にして、同じ音をF側とB♭側で出すとき、それぞれ第何倍音を使っているか比べましょう。</li></ol></details>
+
+<section class="panel" aria-label="楽器の設定">
+  <div class="row">
+    <div class="field"><span class="label">楽器</span><div class="chips" id="instChips"></div><details class="tip"><summary>楽器と楽譜の記号</summary><div><p>トランペットはト音記号で書きます。ホルンはト音記号を中心に、低い音はヘ音記号も使う大譜表にしています。トロンボーン・ユーフォニアム・チューバはヘ音記号が中心で、高い倍音はト音譜表に入ります。</p><p>音符の上に「8va」とあるときは、書かれた音より1オクターブ高い音を表します。</p></div></details></div>
+    <div class="field"><span class="label">仕様</span><div class="chips" id="varChips"></div><details class="tip"><summary>仕様の違い</summary><div><p><b>ダブルホルン</b>：親指バルブ（T）で、管の長いF管と短いB♭管を切り替えます。</p><p><b>バストロンボーンのトリガー</b>：管を足して基音を完全4度（B♭→F）下げます。</p><p><b>4番バルブ</b>：押すと完全4度下がり、低音域の音を出しやすくします。</p><p><b>コンペンセーティング</b>：4番バルブと他のバルブを組み合わせたときに上ずる分を、追加の管で補正する仕組みです。</p></div></details></div>
+    <div class="field" id="dispField"><span class="label">表示</span><div class="chips" id="dispChips"></div><details class="tip"><summary>記譜音と実音</summary><div><p>B♭トランペットは、楽譜に書かれた音より長2度低い音が実際に鳴ります（記譜C → 実音B♭）。F管ホルンは完全5度低く鳴ります（記譜C → 実音F）。</p><p>合奏で他の楽器と比べるときは「実音」に切り替えると便利です。</p></div></details></div>
+    <div class="field"><span class="label">基準ピッチ</span><div class="chips" id="aChips"></div><details class="tip"><summary>基準ピッチ</summary><div><p>チューニングの基準になる A4 の振動数です。日本の吹奏楽では 442 Hz がよく使われます。</p></div></details></div>
+  </div>
+</section>
+
+<section class="panel" aria-label="押さえ方">
+  <h2 id="fingTitle">押さえ方 <small>左から順に基音が半音ずつ下がります</small></h2>
+  <div class="fings" id="fings"></div>
+  <div class="instr" id="instr"></div>
+  <details class="tip"><summary>バルブ・スライドと基音の関係</summary><div><p>管の中の空気柱の固有振動数は、管の長さにほぼ反比例します（開管なら f = v ÷ 2L）。バルブを押したりスライドを伸ばしたりして管を長くすると、基音が下がり、その上の倍音列も同じ割合で下がります。</p><p>バルブの基本：2番＝半音、1番＝全音、3番＝1音半（1+2と同じ）下がります。</p><p>トロンボーンでは、半音下げるたびに管を約6%（1.0595倍）ずつ長くする必要があります。もとの管が長くなるほど同じ半音でも動かす距離が大きくなるので、ポジションの間隔は外側ほど広がります。</p></div></details>
+</section>
+
+<div class="main">
+  <section class="panel">
+    <h2>倍音列 <small id="seriesSub"></small></h2>
+    <div class="scroll"><svg class="staff" id="staff" role="img" aria-label="倍音列の五線譜"></svg></div>
+    <div class="legend"><span><i style="background:var(--ink)"></i>平均律とほぼ同じ</span><span><i style="background:var(--flat)"></i>低め</span><span><i style="background:var(--sharp)"></i>高め</span><span>数字は平均律からのずれ（セント）</span><span>白抜き＝第1倍音（ペダル）</span><span>薄い音＝実用音域外</span></div>
+    <details class="tip"><summary>五線譜の読み方</summary><div><p><b>上の数字</b>：倍音の番号（基音の何倍の振動数か）。<b>下の「ずれ」</b>：平均律と比べて何セント高いか低いか。<b>「比」</b>：隣り合う倍音の振動数の比です。</p><p>比が 2:1 → 3:2 → 4:3 … と1に近づくので、高い音域ほど隣の音との間隔が狭くなります。高音で音を外しやすいのはこのためです。</p><p>第1倍音（白抜き）はペダル音です。トランペットやホルンではふつう使いません。</p></div></details>
+    <div class="btns"><button class="btn" id="slurUp">リップスラーで鳴らす（第2〜8倍音）</button><button class="btn ghost" id="slurAll">第12倍音まで鳴らす</button></div>
+    <details class="tip"><summary>リップスラー練習に</summary><div><p>押さえ方を変えずに、唇と息だけで倍音を移る練習がリップスラーです。お手本の音を聞いてから、同じ押さえ方で吹いてみましょう。</p></div></details>
+  </section>
+
+  <section class="panel finder" id="finder" aria-live="polite"></section>
+</div>
+
+<section class="panel">
+  <h2>倍音マップ <small>行＝押さえ方、列＝音の高さ。同じ列に並ぶ丸が「同じ音を出せる押さえ方」です</small></h2>
+  <div class="scroll" id="mapBox"></div>
+  <p class="note-s">丸の中の数字は倍音の番号、色はずれの傾向（バルブの組み合わせによる上ずりを含む）。丸を押すとその音が鳴り、上のファインダーで比較できます。</p>
+  <details class="tip"><summary>マップの見方</summary><div><p>押さえ方を1つ変えて基音が半音下がると、その行の丸は全部そろって1列左にずれます。そのため丸は斜めの帯のように並びます。</p><p>同じ列（縦）に丸が2つ以上あれば、その音は複数の押さえ方で出せます（替え指）。丸の色を比べると、どの押さえ方が高め・低めの傾向をもつかがひと目でわかります。</p></div></details>
+</section>
+
+<details>
+  <summary>倍音列はどうしてできるのか</summary>
+  <p>金管楽器の管の中の空気柱は、両端の条件で決まる固有振動をもちます。唇の振動がこれらの固有振動のどれかと結びつくと、その高さの音が鳴ります。理想化すると固有振動数は基音の 1, 2, 3, 4…倍になり、これが倍音列です。隣り合う倍音の比は 2:1（オクターブ）、3:2（完全5度）、4:3（完全4度）、5:4（長3度）…と小さくなるので、高い音域ほど音どうしが詰まって当てにくくなります。</p>
+  <p>トランペットやホルンの第1倍音は管の共鳴としては弱く、「ペダル音」は特殊な奏法になります。トロンボーンやユーフォニアム、チューバではペダル音も実用されます。</p>
+</details>
+<details>
+  <summary>第5・第7倍音などが平均律からずれる理由</summary>
+  <p>倍音は整数比で並びますが、平均律は1オクターブを12等分した音律です。第3倍音は平均律より約2セント高く、第5倍音は約14セント低く、第7倍音は約31セント低く、第11倍音は平均律のどの音とも半音の半分近くずれます。このずれは楽器の欠点ではなく、純正な和音の響きそのものです。長三和音の第3音は第5倍音と同じ比 5:4 なので、和音の第3音を吹くなら「低めに出る倍音」がちょうど合います。</p>
+</details>
+<details>
+  <summary>バルブを組み合わせると高めになる理由</summary>
+  <p>各バルブの迂回管は、開放の管に対して決まった割合だけ長くなるように作られています。ところが2本・3本を同時に押すと、すでに長くなった管に対しては迂回管の割合が足りなくなり、音が上ずります。1+3 は約30セント、1+2+3 は約50セント高くなる計算です（チューニング管を調整しない理論値）。トランペットの第1・第3スライドのトリガーは、この上ずりを抜いて補うための仕組みです。ユーフォニアムのコンペンセーティング方式は、4番バルブと組み合わせたときに追加の管を通して上ずりを打ち消します。</p>
+</details>
+<details>
+  <summary>替え指・替えポジションの使い分け</summary>
+  <p>同じ音名でも、どの倍音で出しているかによって音程の傾向が違います。和音の根音や第5音ならほぼ平均律か少し高め、長三和音の第3音なら約14セント低め、短三和音の第3音なら約16セント高め、属七の第7音なら約31セント低めが純正な響きです。ファインダーで「和音での役割」を選ぶと、目標に一番近い押さえ方を示します。たとえばトロンボーンの D4 は第1ポジションでは低すぎて、スライドをそれ以上縮められません。第4ポジション（第6倍音）を使えば高さを確保できます。</p>
+</details>
+</div>
+
+<script>
+const GLYPH={g:"M314 801Q300 854 291.0 906.0Q282 958 282 1012Q282 1059 288.5 1100.5Q295 1142 307 1177Q320 1217 341.0 1252.5Q362 1288 385.5 1311.0Q409 1334 427 1334Q451 1334 493 1249Q514 1206 524.0 1156.0Q534 1106 534 1049Q534 978 515.0 907.5Q496 837 459.5 775.0Q423 713 372 666L407 498Q422 500 432.0 501.0Q442 502 447 502Q508 502 556.0 467.5Q604 433 632.5 377.0Q661 321 661 254Q661 177 621.5 115.5Q582 54 503 25Q508 8 532 -117Q538 -147 541.0 -164.5Q544 -182 545.0 -195.0Q546 -208 546 -225Q546 -275 521.5 -314.5Q497 -354 455.5 -376.0Q414 -398 363 -398Q311 -398 271.0 -378.5Q231 -359 208.0 -324.5Q185 -290 185 -245Q185 -197 211.5 -165.0Q238 -133 287 -133Q329 -133 355.5 -163.5Q382 -194 382 -236Q382 -272 357.0 -299.0Q332 -326 292 -326H282Q308 -365 364 -365Q433 -365 472.0 -320.0Q511 -275 511 -205Q511 -188 507.0 -159.5Q503 -131 493 -91Q483 -51 477.5 -25.0Q472 1 470 12Q436 2 390 2Q304 2 222 52Q142 102 96.0 184.0Q50 266 50 361Q50 451 91 530Q132 609 192.5 675.0Q253 741 314 801ZM341 826Q364 838 390.0 870.5Q416 903 440.0 945.0Q464 987 479.0 1029.5Q494 1072 494 1106Q494 1142 483.0 1163.0Q472 1184 445 1184Q421 1184 398.5 1162.0Q376 1140 358.5 1103.5Q341 1067 331.0 1022.0Q321 977 321 930Q321 898 327.5 872.0Q334 846 341 826ZM398 379Q371 373 347.0 353.5Q323 334 308.5 306.5Q294 279 294 248Q294 223 307.0 196.5Q320 170 339 154Q352 142 365 136Q380 129 380 123Q380 120 370 117Q332 126 301.5 151.0Q271 176 253.5 211.5Q236 247 236 287Q236 330 253.5 370.0Q271 410 302.5 442.0Q334 474 374 490L345 641Q229 547 174.5 456.5Q120 366 120 277Q120 212 154.0 156.0Q188 100 247.0 65.5Q306 31 380 31Q400 31 420.5 35.0Q441 39 464 45ZM495 55Q593 97 593 227Q593 270 571.0 305.5Q549 341 512.0 362.0Q475 383 429 383Z",f:"M50 123Q216 231 288 301Q336 348 373.0 408.5Q410 469 431.5 536.0Q453 603 453 669Q453 728 435.0 773.5Q417 819 383.0 845.0Q349 871 302 871Q284 871 264.5 867.0Q245 863 224 855Q181 839 158.0 813.5Q135 788 135 765Q135 756 143.0 752.0Q151 748 158 748Q168 748 183 752Q190 754 196.5 755.0Q203 756 210 756Q248 756 272.0 733.5Q296 711 296 674Q296 638 266.0 612.0Q236 586 195 586Q146 586 111.0 617.0Q76 648 76 697Q76 756 109.0 802.0Q142 848 198.5 874.0Q255 900 324 900Q400 900 460.0 867.0Q520 834 555.5 776.5Q591 719 591 646Q591 551 538 464Q511 419 476.5 379.0Q442 339 389.0 297.5Q336 256 256.0 208.0Q176 160 57 101ZM687 809Q710 809 726.0 793.0Q742 777 742 754Q742 731 726.0 715.5Q710 700 687 700Q664 700 648.0 715.5Q632 731 632 754Q632 777 648.0 793.0Q664 809 687 809ZM687 589Q710 589 726.0 573.0Q742 557 742 534Q742 511 726.0 495.5Q710 480 687 480Q664 480 648.0 495.5Q632 511 632 534Q632 557 648.0 573.0Q664 589 687 589Z",sharp:"M97 46V189L50 177V277L97 290V486H128V298L195 314V509H226V322L275 333V234L226 220V77L275 89V-14L226 -26V-214H195V-34L128 -52V-247H97V-59L50 -71V32ZM195 70V214L128 197V54Z",flat:"M50 615H81V225Q118 262 165 262Q197 262 223.0 240.5Q249 219 249 178Q249 146 230.0 119.0Q211 92 179 65L110 6Q91 -10 76.0 -25.5Q61 -41 50 -55ZM81 12Q107 40 125.0 63.5Q143 87 153 105Q164 124 169.5 140.0Q175 156 175 170Q175 198 162.0 210.5Q149 223 134 223Q118 223 102.5 211.5Q87 200 81 180Z"};
+const NAMES=["C","C♯","D","E♭","E","F","F♯","G","A♭","A","B♭","B"];
+const SPELL=[[0,0],[0,1],[1,0],[2,-1],[2,0],[3,0],[3,1],[4,0],[5,-1],[5,0],[6,-1],[6,0]]; // [letter, accidental]
+const NP=12;
+const SEMI=[0,12,19,24,28,31,34,36,38,40,42,43];
+const PDEV=SEMI.map((s,i)=>1200*Math.log2(i+1)-100*s);
+const VSEMI={1:2,2:1,3:3,4:5};
+const SLIDE_MAX=0.62;
+const ROLES=[["root","根音",0],["fifth","第5音",1.96],["M3","長3度",-13.69],["m3","短3度",15.64],["m7","短7度",-31.17]];
+
+const INSTS={
+  tp:{name:"B♭トランペット",trans:2,clefs:["treble"],variants:{
+    std:{label:"3本バルブ",sides:[{fund:46,valves:3}],range:[52,82]}}},
+  hn:{name:"ホルン",trans:7,clefs:["treble","bass"],note:"記譜はF管（in F）",variants:{
+    dbl:{label:"ダブル（F＋B♭）",sides:[{fund:29,valves:3},{fund:34,valves:3,prefix:"T"}],range:[35,77]},
+    F:{label:"F管のみ",sides:[{fund:29,valves:3}],range:[35,77]},
+    Bb:{label:"B♭管のみ（親指）",sides:[{fund:34,valves:3,prefix:"T"}],range:[35,77]}}},
+  tb:{name:"トロンボーン",trans:0,clefs:["treble","bass"],slide:true,variants:{
+    tenor:{label:"テナー",sides:[{fund:34,slide:2.94,maxPos:7}],range:[40,77]},
+    bass:{label:"バス（F管トリガー）",sides:[{fund:34,slide:2.94,maxPos:7},{fund:29,slide:3.93,maxPos:6,prefix:"T"}],range:[34,72]}}},
+  eu:{name:"ユーフォニアム",trans:0,clefs:["treble","bass"],variants:{
+    v3:{label:"3本バルブ",sides:[{fund:34,valves:3}],range:[40,72]},
+    v4:{label:"4番バルブ（非補正）",sides:[{fund:34,valves:4}],range:[35,72]},
+    comp:{label:"4本・コンペンセーティング",sides:[{fund:34,valves:4,comp:true}],range:[35,72]}}},
+  tu:{name:"B♭チューバ",trans:0,clefs:["treble","bass"],variants:{
+    v3:{label:"3本バルブ",sides:[{fund:22,valves:3}],range:[28,65]},
+    v4:{label:"4番バルブ（非補正）",sides:[{fund:22,valves:4}],range:[23,65]}}}
+};
+const st={inst:"tp",variant:{tp:"std",hn:"dbl",tb:"tenor",eu:"v3",tu:"v3"},disp:"written",A:442,fing:0,note:null,role:"root"};
+const $=s=>document.querySelector(s);
+const inst=()=>INSTS[st.inst], vari=()=>inst().variants[st.variant[st.inst]];
+const trans=()=>st.disp==="written"?inst().trans:0;
+const nm=m=>NAMES[((m%12)+12)%12]+(Math.floor(m/12)-1);
+const fA=m=>st.A*Math.pow(2,(m-69)/12);
+const fmt=c=>{const r=Math.round(c);return r===0?"±0":(r>0?"+":"−")+Math.abs(r)};
+const dcls=d=>d<=-25?"d-f2":d<=-6?"d-f1":d<6?"d-z":d<25?"d-s1":"d-s2";
+
+/* ---------- fingerings ---------- */
+let FINGS=[];
+function buildFings(){
+  const out=[];
+  vari().sides.forEach(sd=>{
+    const pre=sd.prefix||"";
+    if(sd.slide){
+      for(let p=1;p<=sd.maxPos;p++){const k=p-1,dist=sd.slide/2*(Math.pow(2,k/12)-1);
+        out.push({label:pre+p,short:pre+p,k,fund:sd.fund-k,dev:0,pos:p,trig:!!pre,dist,L:sd.slide,unreach:dist>SLIDE_MAX})}
+    }else{
+      const vs=sd.valves===4?[1,2,3,4]:[1,2,3];
+      for(let mask=0;mask<(1<<vs.length);mask++){
+        const on=vs.filter((v,i)=>mask&(1<<i));
+        const k=on.reduce((a,v)=>a+VSEMI[v],0),R=1+on.reduce((a,v)=>a+Math.pow(2,VSEMI[v]/12)-1,0);
+        let dev=1200*Math.log2(Math.pow(2,k/12)/R);
+        if(sd.comp&&on.includes(4))dev=0;
+        const body=on.length?on.join("+"):"開放";
+        out.push({label:pre?(on.length?"T+"+on.join("+"):"T（開放）"):body,short:pre+(on.length?on.join(""):"0"),k,fund:sd.fund-k,dev,valves:on,thumb:!!pre,nv:sd.valves})
+      }
+    }
+  });
+  out.sort((a,b)=>b.fund-a.fund||Math.abs(a.dev)-Math.abs(b.dev)||(a.valves?a.valves.length-b.valves.length:0)||(a.trig?1:0)-(b.trig?1:0));
+  FINGS=out;
+}
+function partialsOf(f){const r=[];for(let n=1;n<=NP;n++){const c=f.fund+SEMI[n-1];r.push({n,concert:c,dev:PDEV[n-1]+f.dev,freq:fA(f.fund)*n*Math.pow(2,f.dev/1200)})}return r}
+const inRange=c=>c>=vari().range[0]&&c<=vari().range[1];
+
+/* ---------- audio ---------- */
+let ac=null,wave=null;
+function ctx(){if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();const a=[1,.9,.75,.6,.5,.4,.3,.22,.15,.1,.07,.05],re=new Float32Array(a.length+1),im=new Float32Array(a.length+1);a.forEach((v,i)=>im[i+1]=v);wave=ac.createPeriodicWave(re,im)}ac.resume();return ac}
+function tone(freq,t0,dur){const c=ctx(),o=c.createOscillator(),g=c.createGain(),lp=c.createBiquadFilter();
+  o.setPeriodicWave(wave);o.frequency.value=freq;lp.type="lowpass";lp.frequency.value=Math.min(5000,freq*7);
+  const t=c.currentTime+(t0||0),d=dur||1.0;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.28,t+0.04);g.gain.setTargetAtTime(0.2,t+0.06,0.15);g.gain.setTargetAtTime(0,t+d,0.06);
+  o.connect(lp);lp.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d+0.4)}
+
+/* ---------- controls ---------- */
+function chips(box,items,cur,onPick){box.innerHTML=items.map(([v,l])=>`<button data-v="${v}" aria-pressed="${String(v)===String(cur)}">${l}</button>`).join("");
+  box.onclick=e=>{const b=e.target.closest("button");if(b)onPick(b.dataset.v)}}
+function defaultNote(){const f=FINGS[0];return f.fund+SEMI[4]}
+function resetInst(){buildFings();st.fing=0;st.note=defaultNote()}
+function renderControls(){
+  chips($("#instChips"),Object.entries(INSTS).map(([k,v])=>[k,v.name]),st.inst,v=>{st.inst=v;resetInst();render()});
+  chips($("#varChips"),Object.entries(inst().variants).map(([k,v])=>[k,v.label]),st.variant[st.inst],v=>{st.variant[st.inst]=v;const keep=st.note;buildFings();st.fing=0;st.note=keep;render()});
+  $("#dispField").hidden=inst().trans===0;
+  chips($("#dispChips"),[["written","記譜音"],["concert","実音"]],st.disp,v=>{st.disp=v;render()});
+  chips($("#aChips"),[[440,"A=440"],[442,"A=442"]],st.A,v=>{st.A=+v;render()});
+}
+
+/* ---------- fingering row + instrument view ---------- */
+function renderFings(){
+  $("#fingTitle").innerHTML=(inst().slide?"ポジション":"押さえ方")+` <small>左から順に基音が半音ずつ下がります（下の小さな文字は基音の${trans()?"記譜":"実音"}名）</small>`;
+  $("#fings").innerHTML=FINGS.map((f,i)=>`<button data-i="${i}" aria-pressed="${i===st.fing}" class="${f.dev>=20?"sharp":""} ${f.unreach?"unreach":""}"><b>${f.pos?(f.trig?f.label:f.label+"ポジ"):f.label}</b><small>${nm(f.fund+trans())}</small></button>`).join("");
+  $("#fings").onclick=e=>{const b=e.target.closest("button");if(!b)return;st.fing=+b.dataset.i;render()};
+  const f=FINGS[st.fing];let h="";
+  if(f.pos){h=slideSVG(f)}
+  else{const n=f.nv;let v="";if(st.inst==="hn")v+=`<span class="valve thumb ${f.thumb?"on":""}" title="親指バルブ">T</span>`;
+    for(let i=1;i<=n;i++)v+=`<span class="valve ${f.valves.includes(i)?"on":""}">${i}</span>`;h=`<div class="valves" aria-label="押さえるバルブ">${v}</div>`}
+  const fundTxt=`基音 <b>${nm(f.fund)}</b>（実音）${inst().trans?` ／ 記譜 <b>${nm(f.fund+inst().trans)}</b>`:""}`;
+  let extra="";
+  if(f.valves&&f.valves.length>1)extra=Math.abs(f.dev)<1?"コンペンセーティングで上ずりを補正":`組み合わせによる上ずり <b class="${f.dev>0?"c-s":""}">${fmt(f.dev)}¢</b>（理論値）`;
+  if(f.pos)extra=`スライド位置 <b>${(f.dist*100).toFixed(1)} cm</b>（第1ポジションから）${f.trig?` ≈ テナー側の ${tenorEq(f.dist)} ポジション`:""}${f.unreach?` <b class="c-s">届かない：Fチューニング管を抜いて対応</b>`:""}`;
+  $("#instr").innerHTML=h+`<div class="facts"><span>${fundTxt}</span>${extra?`<span>${extra}</span>`:""}</div>`;
+}
+const tenorEq=d=>(12*Math.log2(1+d/1.47)+1).toFixed(1);
+function slideSVG(f){
+  const W=520,x0=40,sc=(W-x0-30)/0.72,X=d=>x0+d*sc,trig=vari().sides.length>1;
+  let s=`<div class="slide"><svg viewBox="0 0 ${W} ${trig?112:84}" role="img" aria-label="スライドの位置">`;
+  s+=`<rect class="sl-fixed" x="${x0-30}" y="30" width="30" height="10" rx="2"/>`;
+  s+=`<rect class="sl-tube" x="${x0}" y="31" width="${Math.max(2,X(Math.min(f.dist,SLIDE_MAX))-x0)}" height="8" rx="2"/>`;
+  s+=`<line class="sl-axis" x1="${x0}" x2="${X(0.72)}" y1="50" y2="50"/>`;
+  for(let cm=0;cm<=70;cm+=10)s+=`<line class="sl-axis" x1="${X(cm/100)}" x2="${X(cm/100)}" y1="47" y2="53"/><text class="sl-txt" x="${X(cm/100)}" y="${trig?106:78}" text-anchor="middle">${cm}</text>`;
+  s+=`<text class="sl-txt" x="${X(0.72)}" y="${trig?106:78}" text-anchor="end" dx="22">cm</text>`;
+  for(let p=1;p<=7;p++){const d=2.94/2*(Math.pow(2,(p-1)/12)-1);const on=!f.trig&&f.pos===p;
+    s+=`<circle cx="${X(d)}" cy="50" r="${on?6:3.5}" fill="${on?"var(--brass)":"var(--ink)"}"/><text class="sl-pos" x="${X(d)}" y="22" text-anchor="middle">${p}</text>`}
+  if(trig)for(let p=1;p<=6;p++){const d=3.93/2*(Math.pow(2,(p-1)/12)-1),on=f.trig&&f.pos===p,bad=d>SLIDE_MAX;
+    s+=`<circle cx="${X(d)}" cy="66" r="${on?6:3.5}" fill="${bad?"none":on?"var(--brass)":"var(--ink-2)"}" stroke="${bad?"var(--sharp)":"none"}" stroke-dasharray="2 2"/><text class="${bad?"sl-bad":"sl-pos"}" x="${X(d)}" y="86" text-anchor="middle">T${p}</text>`}
+  s+=`<line x1="${X(SLIDE_MAX)}" x2="${X(SLIDE_MAX)}" y1="26" y2="${trig?74:58}" stroke="var(--sharp)" stroke-dasharray="3 3"/>`;
+  return s+`</svg></div>`;
+}
+
+/* ---------- staff ---------- */
+function spell(m){const pc=((m%12)+12)%12,o=Math.floor(m/12)-1,[L,acc]=SPELL[pc];return{d:o*7+L,acc}}
+function renderStaff(){
+  const f=FINGS[st.fing],P=partialsOf(f),grand=inst().clefs.length>1,S=9,SP=36,X0=60,sc=S/250;
+  const pnY=14,trTop=pnY+20+3*S,trBot=trTop+4*S,baTop=trBot+3.5*S,baBot=baTop+4*S;
+  const lowest=grand?baBot+3*S:trBot+4.5*S,devY=lowest+24,ratY=devY+16,W=X0+NP*SP+8,H=ratY+8;
+  const yOf=(staff,d)=>staff==="tr"?trBot-(d-30)*S/2:baBot-(d-18)*S/2;
+  let s="";
+  s+=`<text class="st-txt" x="2" y="${pnY}">倍音</text><text class="st-txt" x="2" y="${devY}">ずれ</text><text class="st-txt" x="2" y="${ratY}">比</text>`;
+  // selected column backgrounds + notes
+  let notes="";
+  P.forEach((p,i)=>{
+    const x=X0+i*SP+SP/2,w=p.concert+trans();let {d,acc}=spell(w);let staff=grand?(d>=28?"tr":"ba"):"tr",ott=0;
+    if(staff==="tr"){while(d>44){d-=7;ott++}if(!grand)while(d<21){d+=7;ott--}}else{while(d<12){d+=7;ott--}}
+    const y=yOf(staff,d),cls=dcls(p.dev),sel=p.concert===st.note,out=!inRange(p.concert)&&p.n>1;
+    let g=`<g class="nt${sel?" sel":""}${out?" out":""}" data-n="${p.n}" tabindex="0" role="button" aria-label="第${p.n}倍音 ${nm(w)} ${fmt(p.dev)}セント">`;
+    g+=`<rect class="hit" x="${x-SP/2+1}" y="${pnY+4}" width="${SP-2}" height="${ratY-pnY-14}" rx="4"/>`;
+    g+=`<text class="st-pn" x="${x}" y="${pnY}" text-anchor="middle">${p.n}</text>`;
+    // ledger lines
+    const led=[];if(staff==="tr"){if(d>=40)for(let L=40;L<=d;L+=2)led.push(L);if(d<=28)for(let L=28;L>=d;L-=2)led.push(L)}else{if(d>=28)for(let L=28;L<=d;L+=2)led.push(L);if(d<=16)for(let L=16;L>=d;L-=2)led.push(L)}
+    led.forEach(L=>{const ly=yOf(staff,L);g+=`<line class="st-line" x1="${x-9}" x2="${x+9}" y1="${ly}" y2="${ly}"/>`});
+    if(acc){const gl=acc>0?GLYPH.sharp:GLYPH.flat,oy=acc>0?131:100;g+=`<path class="${cls}" style="stroke:none" d="${gl}" transform="translate(${x-11-(acc>0?275:249)*sc},${y+oy*sc}) scale(${sc},${-sc})"/>`}
+    g+=`<ellipse class="${cls}${p.n===1?" hollow":""}" cx="${x}" cy="${y}" rx="${S*.62}" ry="${S*.45}" transform="rotate(-20 ${x} ${y})"/>`;
+    if(ott)g+=`<text class="st-ott" x="${x}" y="${ott>0?y-10:y+15}" text-anchor="middle">${ott>0?(ott>1?"15ma":"8va"):(ott<-1?"15mb":"8vb")}</text>`;
+    g+=`<text class="st-txt ${cls}" style="font-weight:500" x="${x}" y="${devY}" text-anchor="middle">${fmt(p.dev)}</text>`;
+    if(i<NP-1)g+=`<text class="st-txt" x="${x+SP/2}" y="${ratY}" text-anchor="middle">${p.n+1}:${p.n}</text>`;
+    notes+=g+`</g>`;
+  });
+  const staffLines=top=>{let l="";for(let i=0;i<5;i++)l+=`<line class="st-line" x1="34" x2="${W-4}" y1="${top+i*S}" y2="${top+i*S}"/>`;return l};
+  s+=staffLines(trTop)+`<path class="st-clef" d="${GLYPH.g}" transform="translate(38,${trBot}) scale(${sc},${-sc})"/>`;
+  if(grand)s+=staffLines(baTop)+`<path class="st-clef" d="${GLYPH.f}" transform="translate(38,${baBot}) scale(${sc},${-sc})"/><line class="st-line" x1="34" x2="34" y1="${trTop}" y2="${baBot}"/>`;
+  s+=notes;
+  const svg=$("#staff");svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.setAttribute("width",W);svg.setAttribute("height",H);svg.innerHTML=s;
+  svg.onclick=e=>{const g=e.target.closest(".nt");if(g)pickPartial(+g.dataset.n)};
+  svg.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){const g=e.target.closest(".nt");if(g){e.preventDefault();pickPartial(+g.dataset.n)}}};
+  const lbl=f.pos?(f.trig?f.label:f.label+"ポジション"):f.label;
+  $("#seriesSub").textContent=`${lbl}・基音 ${nm(f.fund+trans())}（${trans()?"記譜":"実音"}）`;
+}
+function pickPartial(n){const f=FINGS[st.fing],p=partialsOf(f)[n-1];st.note=p.concert;tone(p.freq);render(true)}
+
+/* ---------- finder ---------- */
+function optionsFor(c){const r=[];FINGS.forEach((f,i)=>partialsOf(f).forEach(p=>{if(p.concert===c)r.push({f,i,p})}));return r}
+function renderFinder(){
+  const c=st.note,role=ROLES.find(r=>r[0]===st.role),tgt=role[2],w=c+trans();
+  const opts=optionsFor(c).map(o=>{let score=Math.abs(o.p.dev-tgt);if(o.p.n===1)score+=60;if(!inRange(c))score+=0;if(o.f.unreach)score+=100;if(o.f.pos===1&&!o.f.trig&&tgt-o.p.dev>6)score+=8;return{...o,score}}).sort((a,b)=>a.score-b.score);
+  let h=`<h2>替え指ファインダー <small>同じ音を出せる押さえ方</small></h2>`;
+  h+=`<div><div class="note">${nm(w)}</div><div class="sub">${trans()?`記譜音 ／ 実音 ${nm(c)}`:"実音"}・${fA(c).toFixed(1)} Hz（平均律）</div></div>`;
+  h+=`<div class="field"><span class="label">和音での役割（純正な響きでの目標のずれ）</span><span class="note-s">長3度・短3度＝三和音の第3音、短7度＝属七の和音の第7音</span><div class="chips" id="roleChips">${ROLES.map(r=>`<button data-v="${r[0]}" aria-pressed="${r[0]===st.role}">${r[1]} ${fmt(r[2])}</button>`).join("")}</div></div>`;
+  h+=`<details class="tip"><summary>ファインダーの使い方</summary><div><p>同じ音名でも、どの押さえ方の第何倍音で出すかによって、平均律からのずれ（傾向）が違います。</p><p>和音の中では、役割ごとに「純正に響く高さ」が決まっています。根音・第5音はほぼ平均律、長三和音の第3音は約14セント低め、短三和音の第3音は約16セント高め、属七の第7音は約31セント低めです。</p><p>傾向と目標の差が小さい押さえ方ほど、唇やスライドでの修正が少なくて済みます。おすすめは計算上の目安なので、最後は自分の耳とチューナーで確かめましょう。</p></div></details>`;h+=`<ul class="opts">`+opts.map((o,j)=>{const need=tgt-o.p.dev,f=o.f,lbl=f.pos?(f.trig?f.label:f.label+"ポジション"):f.label;
+    let tip="";
+    if(f.pos){const Lt=f.L*Math.pow(2,f.k/12),cm=Math.abs(Lt*(1-Math.pow(2,-need/1200))/2*100);
+      tip=Math.abs(need)<3?"スライドはそのままでよい":need>0?(f.pos===1&&!f.trig?`<span class="c-s">${fmt(need)}¢ 上げたいが、第1ポジションより手前には動かせない</span>`:`手前（短く）へ約 ${cm.toFixed(1)} cm で ${fmt(need)}¢`):`奥（長く）へ約 ${cm.toFixed(1)} cm で ${fmt(need)}¢`;
+      if(f.unreach)tip=`<span class="c-s">このポジションには届かない</span>`}
+    else tip=Math.abs(need)<4?"ほぼそのままで合う":`唇・スライドで <b class="cents ${need>0?"c-s":"c-f"}">${fmt(need)}¢</b> ${need>0?"上げる":"下げる"}${f.valves&&f.valves.includes(3)&&need<0&&st.inst==="tp"?"（第3管スライドを抜く）":""}${f.valves&&f.valves.includes(1)&&!f.valves.includes(3)&&need<0&&st.inst==="tp"?"（第1管スライドを抜く）":""}`;
+    return `<li class="opt${j===0?" best":""}"><span class="fg">${lbl}${j===0?`<span class="badge">おすすめ</span>`:""}</span>
+      <button class="play" data-j="${j}">▶ 鳴らす</button>
+      <span class="meta">第${o.p.n}倍音${o.p.n===1?"（ペダル）":""}・傾向 <b class="cents ${o.p.dev>5?"c-s":o.p.dev<-5?"c-f":""}">${fmt(o.p.dev)}¢</b>${!inRange(c)?"・音域外":""}</span>
+      <span class="tip">${tip}</span></li>`}).join("")+`</ul>`;
+  h+=`<div class="btns"><button class="btn ghost" id="etBtn">平均律の音を鳴らす</button><button class="btn ghost" id="cmpBtn">おすすめと平均律を交互に</button></div>`;
+  const box=$("#finder");box.innerHTML=h;
+  box.querySelector("#roleChips").onclick=e=>{const b=e.target.closest("button");if(b){st.role=b.dataset.v;renderFinder()}};
+  box.querySelectorAll(".play").forEach(b=>b.onclick=()=>{const o=opts[+b.dataset.j];tone(o.p.freq)});
+  box.querySelector("#etBtn").onclick=()=>tone(fA(c));
+  box.querySelector("#cmpBtn").onclick=()=>{if(!opts.length)return;const fq=fA(c)*Math.pow(2,tgt/1200);[0,1,2,3].forEach(i=>tone(i%2?fA(c):opts[0].p.freq,i*1.1,0.95))};
+}
+
+/* ---------- map ---------- */
+function renderMap(){
+  let lo=1e9,hi=-1e9;FINGS.forEach(f=>{lo=Math.min(lo,f.fund);hi=Math.max(hi,f.fund+SEMI[NP-1])});
+  const t=trans(),cols=[];for(let m=lo;m<=hi;m++)cols.push(m);
+  let h=`<table class="map"><thead><tr><th class="rl"></th>${cols.map(m=>`<th>${(m+t)%12===0||m===st.note?nm(m+t):""}</th>`).join("")}</tr></thead><tbody>`;
+  FINGS.forEach((f,i)=>{const P={};partialsOf(f).forEach(p=>P[p.concert]=p);
+    h+=`<tr class="${i===st.fing?"on":""}"><th class="rl">${f.pos?(f.trig?f.label:f.label+"ポジ"):f.label}</th>`+cols.map(m=>{const p=P[m],cc=((m+t)%12===0?"cC":"")+(m===st.note?" col":"");
+      return `<td class="${cc}">${p?`<button class="cell ${dcls(p.dev)}${!inRange(m)&&p.n>1?" out":""}${i===st.fing&&m===st.note?" sel":""}" data-i="${i}" data-n="${p.n}" title="${f.label}・第${p.n}倍音 ${nm(m+t)} ${fmt(p.dev)}¢">${p.n}</button>`:""}</td>`}).join("")+`</tr>`});
+  $("#mapBox").innerHTML=h+`</tbody></table>`;
+  $("#mapBox").onclick=e=>{const b=e.target.closest(".cell");if(!b)return;st.fing=+b.dataset.i;const p=partialsOf(FINGS[st.fing])[+b.dataset.n-1];st.note=p.concert;tone(p.freq);render(true)};
+}
+
+function render(keepScroll){
+  renderControls();renderFings();renderStaff();renderFinder();
+  const box=$("#mapBox"),sl=box.scrollLeft;renderMap();if(keepScroll)box.scrollLeft=sl;
+}
+$("#slurUp").onclick=()=>{const P=partialsOf(FINGS[st.fing]).slice(1,8).filter(p=>inRange(p.concert));const seq=[...P,...P.slice(0,-1).reverse()];seq.forEach((p,i)=>tone(p.freq,i*0.32,0.3))};
+$("#slurAll").onclick=()=>{partialsOf(FINGS[st.fing]).forEach((p,i)=>tone(p.freq,i*0.3,0.28))};
+resetInst();render();
+</script>
+
+</body>
+</html>
