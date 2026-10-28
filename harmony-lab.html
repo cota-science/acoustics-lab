@@ -96,6 +96,14 @@ details.tip b{font-weight:700}
 .field details.tip>div{max-width:40ch}
 details.guide ol{margin:.6em 0 0;padding-left:1.4em;display:grid;gap:4px;max-width:66ch}
 details.guide h3{font-size:14px;margin:1em 0 0}
+.staffcard{gap:8px}
+.staffcard svg{display:block;width:100%;max-width:440px;height:auto;margin:0 auto}
+.staffcard .sub{color:var(--ink-2);font-size:13px}
+.gs-line{stroke:var(--ink-2);stroke-width:1}
+.gs-clef{fill:var(--ink)}
+.gs-lab{font:700 12px var(--f-body);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.gs-lead{stroke-width:1;opacity:.55}
+.gs-head{fill:none;stroke-width:2.2}
 </style>
 </head>
 <body>
@@ -165,6 +173,12 @@ details.guide h3{font-size:14px;margin:1em 0 0}
 
   <section class="stage">
     <div class="voices" id="voices"></div>
+    <div class="card staffcard">
+      <h2>鳴っている音（大譜表）</h2>
+      <svg id="gs" role="img" aria-label="鳴っている音の大譜表"></svg>
+      <p class="sub" id="gsSub"></p>
+      <details class="tip"><summary>大譜表の読み方</summary><div><p>上の段がト音記号、下の段がヘ音記号です。2つの段をまとめて<b>大譜表</b>（だいふひょう）といい、ピアノの楽譜と同じ形です。</p><p>ここに書かれている高さは、楽器が書く音（記譜音）ではなく、実際に鳴っている<b>実音</b>です。B♭管やF管の楽器は、自分の楽譜と書き方がちがいます。</p><p>色は、上の声部のカードの色と同じです。丸の左の ♯・♭ は、その音が半音高い・低いことを表します。丸は和音を同時に鳴らすことを表す全音符の形で、長さは表していません。</p></div></details>
+    </div>
     <div class="canvasbox">
       <canvas id="cv" aria-label="各声部の倍音と差音の位置（横軸は対数の振動数）"></canvas>
       <div class="legend"><span>横軸：振動数（対数）</span><span><b style="color:var(--ok)">緑の線</b>：倍音がぴったり一致</span><span><b style="color:var(--warn)">橙の点線</b>：近い倍音どうしのうなり</span></div>
@@ -195,6 +209,8 @@ const CHORDS={
   P5:{label:"完全5度",semis:[0,7],ratios:[1,3/2],roles:["根音","完全5度"],target:1},
   P4:{label:"完全4度",semis:[0,5],ratios:[1,4/3],roles:["根音","完全4度"],target:1}
 };
+const GLYPH={g:"M314 801Q300 854 291.0 906.0Q282 958 282 1012Q282 1059 288.5 1100.5Q295 1142 307 1177Q320 1217 341.0 1252.5Q362 1288 385.5 1311.0Q409 1334 427 1334Q451 1334 493 1249Q514 1206 524.0 1156.0Q534 1106 534 1049Q534 978 515.0 907.5Q496 837 459.5 775.0Q423 713 372 666L407 498Q422 500 432.0 501.0Q442 502 447 502Q508 502 556.0 467.5Q604 433 632.5 377.0Q661 321 661 254Q661 177 621.5 115.5Q582 54 503 25Q508 8 532 -117Q538 -147 541.0 -164.5Q544 -182 545.0 -195.0Q546 -208 546 -225Q546 -275 521.5 -314.5Q497 -354 455.5 -376.0Q414 -398 363 -398Q311 -398 271.0 -378.5Q231 -359 208.0 -324.5Q185 -290 185 -245Q185 -197 211.5 -165.0Q238 -133 287 -133Q329 -133 355.5 -163.5Q382 -194 382 -236Q382 -272 357.0 -299.0Q332 -326 292 -326H282Q308 -365 364 -365Q433 -365 472.0 -320.0Q511 -275 511 -205Q511 -188 507.0 -159.5Q503 -131 493 -91Q483 -51 477.5 -25.0Q472 1 470 12Q436 2 390 2Q304 2 222 52Q142 102 96.0 184.0Q50 266 50 361Q50 451 91 530Q132 609 192.5 675.0Q253 741 314 801ZM341 826Q364 838 390.0 870.5Q416 903 440.0 945.0Q464 987 479.0 1029.5Q494 1072 494 1106Q494 1142 483.0 1163.0Q472 1184 445 1184Q421 1184 398.5 1162.0Q376 1140 358.5 1103.5Q341 1067 331.0 1022.0Q321 977 321 930Q321 898 327.5 872.0Q334 846 341 826ZM398 379Q371 373 347.0 353.5Q323 334 308.5 306.5Q294 279 294 248Q294 223 307.0 196.5Q320 170 339 154Q352 142 365 136Q380 129 380 123Q380 120 370 117Q332 126 301.5 151.0Q271 176 253.5 211.5Q236 247 236 287Q236 330 253.5 370.0Q271 410 302.5 442.0Q334 474 374 490L345 641Q229 547 174.5 456.5Q120 366 120 277Q120 212 154.0 156.0Q188 100 247.0 65.5Q306 31 380 31Q400 31 420.5 35.0Q441 39 464 45ZM495 55Q593 97 593 227Q593 270 571.0 305.5Q549 341 512.0 362.0Q475 383 429 383Z",f:"M50 123Q216 231 288 301Q336 348 373.0 408.5Q410 469 431.5 536.0Q453 603 453 669Q453 728 435.0 773.5Q417 819 383.0 845.0Q349 871 302 871Q284 871 264.5 867.0Q245 863 224 855Q181 839 158.0 813.5Q135 788 135 765Q135 756 143.0 752.0Q151 748 158 748Q168 748 183 752Q190 754 196.5 755.0Q203 756 210 756Q248 756 272.0 733.5Q296 711 296 674Q296 638 266.0 612.0Q236 586 195 586Q146 586 111.0 617.0Q76 648 76 697Q76 756 109.0 802.0Q142 848 198.5 874.0Q255 900 324 900Q400 900 460.0 867.0Q520 834 555.5 776.5Q591 719 591 646Q591 551 538 464Q511 419 476.5 379.0Q442 339 389.0 297.5Q336 256 256.0 208.0Q176 160 57 101ZM687 809Q710 809 726.0 793.0Q742 777 742 754Q742 731 726.0 715.5Q710 700 687 700Q664 700 648.0 715.5Q632 731 632 754Q632 777 648.0 793.0Q664 809 687 809ZM687 589Q710 589 726.0 573.0Q742 557 742 534Q742 511 726.0 495.5Q710 480 687 480Q664 480 648.0 495.5Q632 511 632 534Q632 557 648.0 573.0Q664 589 687 589Z",sharp:"M97 46V189L50 177V277L97 290V486H128V298L195 314V509H226V322L275 333V234L226 220V77L275 89V-14L226 -26V-214H195V-34L128 -52V-247H97V-59L50 -71V32ZM195 70V214L128 197V54Z",flat:"M50 615H81V225Q118 262 165 262Q197 262 223.0 240.5Q249 219 249 178Q249 146 230.0 119.0Q211 92 179 65L110 6Q91 -10 76.0 -25.5Q61 -41 50 -55ZM81 12Q107 40 125.0 63.5Q143 87 153 105Q164 124 169.5 140.0Q175 156 175 170Q175 198 162.0 210.5Q149 223 134 223Q118 223 102.5 211.5Q87 200 81 180Z"};
+const STEPS={maj:[0,2,4],min:[0,2,4],M3:[0,2],m3:[0,2],P5:[0,4],P4:[0,3]};
 const N=8;
 const TIMBRES={
   string:{label:"弦楽器",amps:[1,.5,.33,.25,.2,.17,.14,.12]},
@@ -252,6 +268,45 @@ $("#play").addEventListener("click",()=>{state.playing?stopSound():startSound();
 
 function setPressed(key,val){document.querySelectorAll(`.chips[data-key="${key}"] button`).forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.val===String(val))))}
 
+
+/* ---------- spelling & grand staff ---------- */
+const LETTERS="CDEFGAB",NATPC=[0,2,4,5,7,9,11];
+const accSym=a=>a>0?"♯".repeat(a):a<0?"♭".repeat(-a):"";
+function spellVoices(){
+  const c=chord(),nm=ROOTS.find(r=>r[0]===state.root)[1],m=nm.match(/^([A-G])([♭♯]?)(\d)$/);
+  const L0=LETTERS.indexOf(m[1]),o0=+m[3],step0=o0*7+L0,out=[];
+  c.semis.forEach((s,k)=>{const step=step0+STEPS[state.chord][k],L=((step%7)+7)%7,oct=Math.floor(step/7),midi=state.root+12+s,acc=midi-(12*(oct+1)+NATPC[L]);
+    out.push({step,midi,acc,oct,L,name:LETTERS[L]+accSym(acc)+oct})});
+  return out}
+function renderStaff(){
+  const vs=spellVoices(),c=chord(),S=9,sc=S/250,NX=124,EX=NX+40,LX=EX+22,W=LX+92,top=2*S+4;
+  const trTop=top,trBot=trTop+4*S,baTop=trBot+3.5*S,baBot=baTop+4*S,H=baBot+2*S+4;
+  const yOf=(st,d)=>st==="tr"?trBot-(d-30)*S/2:baBot-(d-18)*S/2;
+  let s="";
+  const lines=t=>{let l="";for(let i=0;i<5;i++)l+=`<line class="gs-line" x1="30" x2="${EX}" y1="${t+i*S}" y2="${t+i*S}"/>`;return l};
+  s+=lines(trTop)+lines(baTop)+`<line class="gs-line" x1="30" x2="30" y1="${trTop}" y2="${baBot}"/>`;
+  s+=`<path class="gs-clef" d="${GLYPH.g}" transform="translate(34,${trBot}) scale(${sc},${-sc})"/><path class="gs-clef" d="${GLYPH.f}" transform="translate(34,${baBot}) scale(${sc},${-sc})"/>`;
+  // accidental columns (from the top note down)
+  const cols=[],items=vs.map((v,i)=>({v,i,staff:v.step>=28?"tr":"ba"})).sort((a,b)=>b.v.step-a.v.step);
+  items.forEach(it=>{it.y=yOf(it.staff,it.v.step);if(!it.v.acc){it.col=-1;return}
+    let k=0;while(cols[k]!==undefined&&cols[k]-it.v.step<6)k++;cols[k]=it.v.step;it.col=k});
+  items.forEach(it=>{const {v,staff}=it,col=`var(--v${it.i+1})`,d=v.step;
+    const led=[];if(staff==="tr"){for(let L=28;L>=d;L-=2)led.push(L);for(let L=40;L<=d;L+=2)led.push(L)}else{for(let L=28;L<=d;L+=2)led.push(L);for(let L=16;L>=d;L-=2)led.push(L)}
+    led.forEach(L=>{const ly=yOf(staff,L);s+=`<line class="gs-line" style="stroke-width:1.2;opacity:1" x1="${NX-10}" x2="${NX+10}" y1="${ly}" y2="${ly}"/>`});
+    if(v.acc){const gl=v.acc>0?GLYPH.sharp:GLYPH.flat,oy=v.acc>0?131:100,ox=v.acc>0?275:249,x=NX-12-it.col*10;
+      s+=`<path style="fill:${col}" d="${gl}" transform="translate(${x-ox*sc},${it.y+oy*sc}) scale(${sc},${-sc})"/>`}
+    s+=`<ellipse class="gs-head" style="stroke:${col}" cx="${NX}" cy="${it.y}" rx="${S*.7}" ry="${S*.48}"/>`});
+  // labels with leader lines, spread so they never overlap
+  const gap=14,lab=items.map(it=>({it,y:it.y+4}));
+  for(let i=1;i<lab.length;i++)if(lab[i].y<lab[i-1].y+gap)lab[i].y=lab[i-1].y+gap;
+  lab.forEach(l=>{const it=l.it,col=`var(--v${it.i+1})`;
+    s+=`<line class="gs-lead" style="stroke:${col}" x1="${NX+S*.7+2}" y1="${it.y}" x2="${LX-3}" y2="${l.y-4}"/>`;
+    s+=`<text class="gs-lab" style="fill:${col}" x="${LX}" y="${l.y}">${c.roles[it.i]}　${it.v.name}</text>`});
+  const svg=$("#gs");svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.innerHTML=s;
+  svg.setAttribute("aria-label","鳴っている音の大譜表："+vs.map((v,i)=>c.roles[i]+" "+v.name).join("、"));
+  $("#gsSub").textContent="実音で表示しています。微調整のずれ（セント）は、この楽譜には表れません。";
+}
+
 function render(audio){
   const c=chord(),fs=freqs(),cs=cents(),an=analyze(fs),jd=justDev(c.target);
   document.getElementById("app").classList.toggle("ear",state.ear);
@@ -266,7 +321,8 @@ function render(audio){
   $("#marks").innerHTML=`<span style="left:${pos(0)}">平均律</span><span class="just" style="left:${pos(jd)}">純正 ${fmtC(jd)}</span>`;
   $("#play").textContent=state.playing?"■ 止める":"▶ 鳴らす";$("#play").setAttribute("aria-pressed",state.playing);
 
-  $("#voices").innerHTML=fs.map((f,i)=>{const nm=nameOf(noteFreq(state.root)*Math.pow(2,c.semis[i]/12)).name;
+  const sp=spellVoices();
+  $("#voices").innerHTML=fs.map((f,i)=>{const nm=sp[i].name;
     return `<div class="voice"><span class="role"><i style="background:var(--v${i+1})"></i>${c.roles[i]}</span><span class="note">${nm}</span><span class="num">${f.toFixed(2)} Hz　<span class="${i===c.target?"spoiler":""}">${i?fmtC(cs[i]):"基準"}</span></span></div>`}).join("");
 
   const top=an.beats.find(b=>b.w>=0.04);
@@ -282,6 +338,7 @@ function render(audio){
     const tag=Math.abs(dev)<3?`<span class="tag ok">根音の${-k}オクターブ下に一致</span>`:"";
     return `<li>${d.kind===1?"f₂−f₁":"2f₁−f₂"}（${c.roles[d.i]}・${c.roles[d.j]}）：<b>${d.f.toFixed(1)} Hz</b> ≈ ${nm.name} <span class="spoiler">${fmtC(nm.cents)}</span>${state.ear?"":tag}</li>`}).join("")}</ul><p>大きな音で2音を同時に鳴らすと、耳の中でこの低い音が聞こえます。純正に合うほど、差音が和音の根音と重なります。</p>`;
 
+  renderStaff();
   draw(fs,an);
   if(state.playing){audio==="rebuild"?swapNodes():updateFreqs()}
 }
